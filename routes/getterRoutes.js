@@ -6,7 +6,14 @@ function getterRoutes (url, res) {
     } else {
         const id = Number(url.split('/')[2])
 
-        getById(id, res)
+        if (id) {
+            getById(id, res)
+            return
+        }
+
+        res.statusCode = 400
+        res.setHeader("Content-Type", "application/json")
+        res.end(JSON.stringify({message: 'This route is not handled'}))
     }
 }
 
