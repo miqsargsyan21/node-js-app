@@ -1,40 +1,28 @@
-const readDataFromFile = require('../helpers/readDataFromFile')
-const writeDataToFile = require('../helpers/writeDataToFile')
-
-exports.updateItem = async (req, res) => {
+const readDataFromFile = require("../helpers/readDataFromFile");
+const writeDataToFile = require("../helpers/writeDataToFile");
+exports.deleteItem = async (req, res) => {
     const {
-        data,
-        statusCode,
+        data: readData,
+        statusCode: readStatusCode,
     } = await readDataFromFile('./data.json')
 
-    if (statusCode === 400) {
-        res.statusCode = statusCode
+    if (readStatusCode === 400) {
+        res.statusCode = readStatusCode
         res.setHeader("Content-Type", "application/json")
-        res.end(data)
+        res.end(readData)
         return
     }
 
     const id = Number(req.url.split('/')[2])
-    const parsedData = JSON.parse(data)
-    const itemById = parsedData.filter(item => item.id === id)[0]
 
-    if (!itemById) {
+    if (!id) {
         res.statusCode = 400
         res.setHeader("Content-Type", "application/json")
         res.end(JSON.stringify({message: 'There is no data with that id'}))
         return
     }
 
-    const newData = parsedData.map(item => {
-        if (item.id === id) {
-            return {
-                ...item,
-                ...req.body,
-            }
-        }
-
-        return item
-    })
+    const newData = JSON.parse(readData).map(item => item.id !== id ? item : null).filter(item => item !== null)
 
     const {
         statusCode: statusCodeResponse,

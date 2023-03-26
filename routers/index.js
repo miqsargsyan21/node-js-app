@@ -1,5 +1,6 @@
 const RouteService = require('../services/RouteService')
 const UpdaterRouter = require('./updaterRouter')
+const DeleterRouter = require('./deleterRouter')
 const GetterRouter = require('./getterRouter')
 const AdderRouter = require('./adderRouter')
 
@@ -11,6 +12,7 @@ Router.get('/', (req, res) => {
 })
 
 Router.use(UpdaterRouter)
+Router.use(DeleterRouter)
 Router.use(GetterRouter)
 Router.use(AdderRouter)
 

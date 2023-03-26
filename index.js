@@ -6,7 +6,6 @@ let {
     HOST: host,
     PORT: port
 } = dotenv.config().parsed
-host -= 0
 port -= 0
 
 HttpService.getInstance(Router)
