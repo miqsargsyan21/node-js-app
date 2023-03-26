@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-exports.getAll = function (res) {
+exports.getAll = function (req, res) {
     fs.readFile('./data.json', 'utf8', (err, data) => {
         if (err) {
             res.statusCode = 400
@@ -16,7 +16,8 @@ exports.getAll = function (res) {
     })
 }
 
-exports.getById = function(id, res) {
+exports.getById = function(req, res) {
+    const id = Number(req.url.split('/')[2])
     fs.readFile('./data.json', 'utf8', (err, data) => {
         if (err) {
             res.statusCode = 400

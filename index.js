@@ -1,18 +1,18 @@
+const HttpService = require('./services/HttpService')
+const Router = require('./routers')
 const dotenv = require('dotenv')
-const http = require('http')
-const handleRoutes = require('./routes/index')
 
 let {
     HOST: host,
     PORT: port
 } = dotenv.config().parsed
-host += 0
-port += 0
+host -= 0
+port -= 0
 
-const server = http.createServer((req, res) => {
-    handleRoutes(req, res)
-})
+HttpService.getInstance(Router)
 
-server.listen(port, host, () => {
+HttpService.listen(port, () => {
     console.log(`Server running at http://${host}:${port}/`)
 })
+
+console.log(HttpService.routeService.routes)
