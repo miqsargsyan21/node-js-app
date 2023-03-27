@@ -17,4 +17,10 @@
     "url": "https://github.com/miqsargsyan21/node-js-app/issues"
   },
   "homepage": "https://github.com/miqsargsyan21/node-js-app#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  }
 }
