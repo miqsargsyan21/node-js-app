@@ -1,8 +1,11 @@
 const RouteService = require('../services/RouteService')
-const UpdaterRouter = require('./updaterRouter')
-const DeleterRouter = require('./deleterRouter')
-const GetterRouter = require('./getterRouter')
-const AdderRouter = require('./adderRouter')
+const {
+    deleteItem,
+    updateItem,
+    addItem,
+    getById,
+    getAll
+} = require("../controllers")
 
 const Router = new RouteService()
 
@@ -11,9 +14,10 @@ Router.get('/', (req, res) => {
     res.end('Hello, World!')
 })
 
-Router.use(UpdaterRouter)
-Router.use(DeleterRouter)
-Router.use(GetterRouter)
-Router.use(AdderRouter)
+Router.delete('/delete/:id', deleteItem)
+Router.put('/update/:id', updateItem)
+Router.get('/get/:id', getById)
+Router.post('/add', addItem)
+Router.get('/get', getAll)
 
 module.exports = Router
