@@ -14,16 +14,20 @@ class HttpService {
 
             this.routeService = routeService
             this.instance = this.createServer()
+            console.log({routeServiceIn: this.routeService.routes})
         }
-
         return this.instance
     }
 
     static createServer() {
-        return http.createServer(this.handleRequest.bind(this))
+        return http.createServer(this.#handleRequest.bind(this))
     }
 
-    static getRequestBody(req) {
+    static listen(port, callback) {
+        this.instance.listen(port, callback);
+    }
+
+    static #getRequestBody(req) {
         return new Promise((resolve, reject) => {
             try {
                 let requestBody = ''
@@ -39,10 +43,19 @@ class HttpService {
         })
     }
 
-    static async handleRequest(req, res) {
+    static #next(index, middlewareList, handler, ...rest) {
+        if (index <= middlewareList.length - 1) {
+            middlewareList[index](...rest, () => {
+                this.#next(index + 1, middlewareList, handler, ...rest)
+            })
+        } else {
+            handler(...rest)
+        }
+    }
+
+    static async #handleRequest(req, res) {
         const {method} = req
-        const parsedUrl = url.parse(req.url, true)
-        let path = parsedUrl.pathname
+        let {pathname: path} = url.parse(req.url, true)
         let handler = null
 
         Object.keys(this.routeService.routes).forEach(key => {
@@ -53,22 +66,22 @@ class HttpService {
         })
 
         if (handler && method === this.routeService.routes[path]?.method) {
-            const requestBody = await this.getRequestBody(req)
+            const requestBody = await this.#getRequestBody(req)
 
             const reqData = {
                 ...req,
                 body: JSON.parse(requestBody ? requestBody.toString() : '{}'),
             }
 
-            handler(reqData, res)
+            if (this.routeService.routes[path].middlewareList) {
+                this.#next(0, this.routeService.routes[path].middlewareList, handler, reqData, res)
+            } else {
+                handler(reqData, res)
+            }
         } else {
             res.writeHead(404)
             res.end('Not Found')
         }
-    }
-
-    static listen(port, callback) {
-        this.instance.listen(port, callback);
     }
 }
 
