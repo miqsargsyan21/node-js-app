@@ -43,10 +43,11 @@ class HttpService {
         })
     }
 
-    static #next(index, middlewareList, handler, ...rest) {
-        if (index <= middlewareList.length - 1) {
-            middlewareList[index](...rest, () => {
-                this.#next(index + 1, middlewareList, handler, ...rest)
+    static #next(middlewareList, handler, ...rest) {
+        if (middlewareList.length) {
+            middlewareList[0](...rest, () => {
+                middlewareList.shift()
+                this.#next(middlewareList, handler, ...rest)
             })
         } else {
             handler(...rest)
@@ -73,8 +74,8 @@ class HttpService {
                 body: JSON.parse(requestBody ? requestBody.toString() : '{}'),
             }
 
-            if (this.routeService.routes[path].middlewareList) {
-                this.#next(0, this.routeService.routes[path].middlewareList, handler, reqData, res)
+            if (this.routeService.routes[path].middlewareList.length) {
+                this.#next(this.routeService.routes[path].middlewareList, handler, reqData, res)
             } else {
                 handler(reqData, res)
             }
